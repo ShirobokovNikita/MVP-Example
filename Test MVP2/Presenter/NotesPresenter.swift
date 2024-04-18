@@ -7,12 +7,6 @@
 
 import UIKit
 
-// Протокол для роутера
-protocol NotesRouterProtocol {
-    func presentAddNoteScreen()
-    func presentNoteDetailScreen(note: Note)
-}
-
 // Протокол для презентера
 protocol NotesPresenterProtocol: AnyObject {
     func viewDidLoad()
@@ -24,8 +18,7 @@ protocol NotesPresenterProtocol: AnyObject {
     func didSelectNote(at index: Int)
 }
 
-// Реализация презентера
-class NotesPresenter: NotesPresenterProtocol {
+class NotesPresenter: NotesPresenterProtocol, NotesRouterDelegate {
     weak var view: NotesViewProtocol?
     var model: NotesModelProtocol
     var router: NotesRouterProtocol?
@@ -35,12 +28,11 @@ class NotesPresenter: NotesPresenterProtocol {
         self.view = view
         self.model = model
         self.router = router
-        if let router = router as? NotesRouter {
-            router.delegate = self
-        }
+        self.router?.delegate = self  // Прямое назначение делегата
     }
     
     func viewDidLoad() {
+        model.addNote(Note(title: "Inital Note 1", content: "Initial Content 1"))
         reloadData()
     }
     
@@ -76,15 +68,9 @@ class NotesPresenter: NotesPresenterProtocol {
         let note = self.note(at: index)
         router?.presentNoteDetailScreen(note: note)
     }
-}
-
-// Можно расширить NotesPresenter для обработки результатов от роутера, если нужно
-extension NotesPresenter: NotesRouterDelegate {
+    
+    // Обработка событий от роутера
     func didAddNote(note: Note) {
         addNote(note)
-    }
-    
-    func didShowNoteDetail() {
-        //
     }
 }

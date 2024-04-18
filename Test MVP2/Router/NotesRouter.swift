@@ -9,12 +9,18 @@ import UIKit
 
 protocol NotesRouterDelegate: AnyObject {
     func didAddNote(note: Note)
-    func didShowNoteDetail()
+}
+
+// Протокол для роутера
+protocol NotesRouterProtocol {
+    var delegate: NotesRouterDelegate? { get set }
+    func presentAddNoteScreen()
+    func presentNoteDetailScreen(note: Note)
 }
 
 class NotesRouter: NotesRouterProtocol {
     weak var viewController: UIViewController?
-    weak var delegate: NotesRouterDelegate?
+    var delegate: NotesRouterDelegate?
     
     func presentAddNoteScreen() {
         let addNoteVC = AddNoteViewController()
